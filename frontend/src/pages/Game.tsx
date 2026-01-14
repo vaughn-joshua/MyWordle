@@ -1,17 +1,21 @@
 import { useEffect, useRef } from "react";
 
 function Game() {
+  type WordLetters = Record<string, { count: number }>;
+
   const rowRef = useRef<(HTMLDivElement | null)[]>([]);
   const currentColumnRef = useRef<number>(0);
   const currentRowRef = useRef<number>(0);
   const currentGuessRef = useRef<string>("");
   const currentWordRef = useRef<string>("");
+  const wordObjRef = useRef<WordLetters>({});
   const hasLoadedRef = useRef(false);
 
   useEffect(() => {
     const init = async () => {
       await getWordOfTheDay(); // wait for the word to load
       if (!hasLoadedRef.current) {
+        BuildWordObject();
         reloadGuess(); // now answer is ready
         hasLoadedRef.current = true;
       }
@@ -62,6 +66,20 @@ function Game() {
       console.log("Error checking for word:", error);
       return false;
     }
+  };
+
+  const BuildWordObject = async () => {
+    const word = currentWordRef.current;
+
+    for (const char of word) {
+      if (wordObjRef.current[char]) {
+        wordObjRef.current[char].count += 1;
+      } else {
+        wordObjRef.current[char] = { count: 1 };
+      }
+    }
+
+    console.log(wordObjRef.current);
   };
 
   const getWordOfTheDay = async (): Promise<void> => {
@@ -147,52 +165,53 @@ function Game() {
 
   const checkGuess = async (guess: string) => {
     const answer = currentWordRef.current;
+    const answerLetters = wordObjRef.current;
     const row = rowRef.current[currentRowRef.current];
 
-    // Step 0: Make all gray first
+    const processed = Array(5).fill(false); // tracks greens
+
     for (let i = 0; i < 5; i++) {
-      //gray keyboard
-      //get the DOM element of the key
-      const keyElement = document.getElementById(guess[i].toUpperCase());
-      keyElement?.classList.add("gray");
+      if (guess[i] === answer[i]) {
+        const keyElement = document.getElementById(guess[i].toUpperCase());
+        keyElement?.classList.add("green");
 
-      row?.children[i]?.classList.remove("green", "yellow", "gray");
-      row?.children[i]?.classList.add("gray");
-    }
+        row?.children[i]?.classList.add("green");
 
-    // Step 1: Green letters (correct position)
-    for (let i = 0; i < 5; i++) {
-      for (let j = 0; j < 5; j++) {
-        if (guess[i] === answer[j]) {
-          const keyElement = document.getElementById(guess[i].toUpperCase());
-          keyElement?.classList.remove("gray", "yellow");
-          keyElement?.classList.add("green");
+        console.log(`${answer[i]} subtracting 1`);
 
-          row?.children[i]?.classList.remove("gray", "yellow");
-          row?.children[i]?.classList.add("green");
-        } else if (guess[i] !== answer[i] && answer.includes(guess[i])) {
-          const keyElement = document.getElementById(guess[i].toUpperCase());
-          keyElement?.classList.remove("gray");
-          keyElement?.classList.add("yellow");
+        answerLetters[answer[i]].count += -1;
+        processed[i] = true; // mark as green
 
-          row?.children[i]?.classList.remove("gray");
-          row?.children[i]?.classList.add("yellow");
-        }
+        console.log(answerLetters);
+
+        console.log(processed);
       }
     }
 
-    // // Step 2: Yellow letters (wrong position but exists)
-    // for (let i = 0; i < 5; i++) {
-    //   if (guess[i] !== answer[i] && answer.includes(guess[i])) {
-    //     row?.children[i]?.classList.remove("gray");
-    //     row?.children[i]?.classList.add("yellow");
-    //   }
-    // }
+    // Step 2: Yellow letters
+    for (let i = 0; i < 5; i++) {
+      if (!processed[i] && answerLetters[guess[i]]?.count > 0) {
+        const keyElement = document.getElementById(guess[i].toUpperCase());
+        keyElement?.classList.remove("gray");
+        keyElement?.classList.add("yellow");
+
+        row?.children[i]?.classList.remove("gray");
+        row?.children[i]?.classList.add("yellow");
+
+        answerLetters[guess[i]].count -= 1; // consume the letter
+      } else if (!processed[i]) {
+        // gray letters
+        const keyElement = document.getElementById(guess[i].toUpperCase());
+        keyElement?.classList.add("gray");
+
+        row?.children[i]?.classList.add("gray");
+      }
+    }
 
     if (guess === answer) {
-      alert("Congratulations! You've guessed the word!");
-      currentRowRef.current = 6; // End the game
       window.removeEventListener("keydown", handleKeyDown);
+      currentRowRef.current = 6; // End the game
+      alert("Congratulations! You've guessed the word!");
     }
   };
 
