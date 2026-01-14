@@ -23,6 +23,15 @@ const isSameDate = (date) => {
         date.getMonth() === cachedDate?.getMonth() &&
         date.getFullYear() === cachedDate?.getFullYear());
 };
+app.get("/api/is-word/:word", async (req, res) => {
+    console.log("checking word");
+    const word = req.params.word;
+    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+    const result = await response.json();
+    console.log("result", result);
+    console.log(response.ok);
+    res.json({ valid: response.ok });
+});
 app.get("/api/word-of-the-day", async (req, res) => {
     const date = new Date();
     if (isSameDate(date) && cachedWord) {

@@ -28,13 +28,31 @@ const isSameDate = (date: Date): boolean => {
 };
 
 app.get(
+  "/api/is-word/:word",
+  async (req: Request, res: Response): Promise<void> => {
+    console.log("checking word");
+    const word = req.params.word;
+    const response = await fetch(
+      `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
+    );
+    const result: any = await response.json();
+
+    console.log("result", result);
+
+    console.log(response.ok);
+
+    res.json({ valid: response.ok });
+  }
+);
+
+app.get(
   "/api/word-of-the-day",
   async (req: Request, res: Response): Promise<void> => {
     const date = new Date();
 
     if (isSameDate(date) && cachedWord) {
       res.send(cachedWord);
-      return
+      return;
     }
 
     const fetchRes = await fetch(

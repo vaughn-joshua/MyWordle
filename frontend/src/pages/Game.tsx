@@ -52,6 +52,18 @@ function Game() {
     }
   };
 
+  const isWord = async (word: string): Promise<boolean> => {
+    try {
+      console.log("Checking for word...");
+      const res = await fetch(`http://localhost:3000/api/is-word/${word}`);
+      const data = await res.json();
+      return data.valid;
+    } catch (error) {
+      console.log("Error checking for word:", error);
+      return false;
+    }
+  };
+
   const getWordOfTheDay = async (): Promise<void> => {
     try {
       console.log("Fetching word of the day...");
@@ -64,21 +76,25 @@ function Game() {
     }
   };
 
-  //   Handle key down event
   const handleKeyDown = (event: KeyboardEvent) => {
+    handleKeyInput(event.key);
+  };
+
+  //   Handle key down event
+  const handleKeyInput = async (key: string) => {
     // if letter and current column < 5
-    if (/^[a-zA-Z]$/.test(event.key) && currentColumnRef.current < 5) {
+    if (/^[a-zA-Z]$/.test(key) && currentColumnRef.current < 5) {
       // set the value of the current cell
       rowRef.current[currentRowRef.current]?.children[
         currentColumnRef.current
-      ]?.setAttribute("value", event.key.toUpperCase());
+      ]?.setAttribute("value", key.toUpperCase());
 
       // increment current column
       currentColumnRef.current = currentColumnRef.current + 1;
 
       // add to current guess
-      currentGuessRef.current += event.key.toLowerCase();
-    } else if (event.key === "Backspace" && currentColumnRef.current > 0) {
+      currentGuessRef.current += key.toLowerCase();
+    } else if (key === "Backspace" && currentColumnRef.current > 0) {
       // remove value of the current cell
       rowRef.current[currentRowRef.current]?.children[
         currentColumnRef.current
@@ -89,9 +105,27 @@ function Game() {
 
       // decrease current column
       currentColumnRef.current = currentColumnRef.current - 1;
-    } else if (event.key === "Enter") {
+    } else if (key === "Enter") {
+      const isItWord = await isWord(currentGuessRef.current);
+      console.log("isItWord", isItWord);
+
+      if (!isItWord && currentGuessRef.current.length === 5) {
+        alert(`${currentGuessRef.current.toUpperCase()} is not a word`);
+
+        //make separate part of clearing guess
+        for (let i = 0; i < 5; i++) {
+          rowRef.current[currentRowRef.current]?.children[i]?.setAttribute(
+            "value",
+            ""
+          );
+        }
+        currentGuessRef.current = "";
+        currentColumnRef.current = 0;
+      }
       // if current column is 5
-      if (currentGuessRef.current.length === 5) {
+      else if (currentGuessRef.current.length != 5) {
+        alert("Need 5 letters");
+      } else {
         // proceed to check the guess
         console.log("Checking guess:", currentGuessRef.current);
         checkGuess(currentGuessRef.current);
@@ -107,21 +141,21 @@ function Game() {
         currentGuessRef.current = "";
         currentColumnRef.current = 0;
         currentRowRef.current = currentRowRef.current + 1;
-      } else {
-        alert("Need 5 letters");
       }
     }
   };
 
-  const checkGuess = (guess: string) => {
+  const checkGuess = async (guess: string) => {
     const answer = currentWordRef.current;
     const row = rowRef.current[currentRowRef.current];
 
-    console.log("Answer:", answer);
-    console.log("Guess:", guess);
-
     // Step 0: Make all gray first
     for (let i = 0; i < 5; i++) {
+      //gray keyboard
+      //get the DOM element of the key
+      const keyElement = document.getElementById(guess[i].toUpperCase());
+      keyElement?.classList.add("gray");
+
       row?.children[i]?.classList.remove("green", "yellow", "gray");
       row?.children[i]?.classList.add("gray");
     }
@@ -130,10 +164,17 @@ function Game() {
     for (let i = 0; i < 5; i++) {
       for (let j = 0; j < 5; j++) {
         if (guess[i] === answer[j]) {
-          row?.children[i]?.classList.remove("gray");
-          row?.children[i]?.classList.remove("yellow");
+          const keyElement = document.getElementById(guess[i].toUpperCase());
+          keyElement?.classList.remove("gray", "yellow");
+          keyElement?.classList.add("green");
+
+          row?.children[i]?.classList.remove("gray", "yellow");
           row?.children[i]?.classList.add("green");
         } else if (guess[i] !== answer[i] && answer.includes(guess[i])) {
+          const keyElement = document.getElementById(guess[i].toUpperCase());
+          keyElement?.classList.remove("gray");
+          keyElement?.classList.add("yellow");
+
           row?.children[i]?.classList.remove("gray");
           row?.children[i]?.classList.add("yellow");
         }
@@ -172,7 +213,6 @@ function Game() {
 
     when enter clicked, check if 6 letters. then check if correct.
 
-
   */
 
   return (
@@ -198,6 +238,95 @@ function Game() {
         </div>
       ))}
       {/* fix the above, REFACTOR it */}
+
+      {/* keyboard */}
+      <div className="keyboard">
+        <br />
+        <div className="keyboard-row">
+          <div className="key" id="Q" onClick={() => handleKeyInput("Q")}>
+            Q
+          </div>
+          <div className="key" id="W" onClick={() => handleKeyInput("W")}>
+            W
+          </div>
+          <div className="key" id="E" onClick={() => handleKeyInput("E")}>
+            E
+          </div>
+          <div className="key" id="R" onClick={() => handleKeyInput("R")}>
+            R
+          </div>
+          <div className="key" id="T" onClick={() => handleKeyInput("T")}>
+            T
+          </div>
+          <div className="key" id="Y" onClick={() => handleKeyInput("Y")}>
+            Y
+          </div>
+          <div className="key" id="U" onClick={() => handleKeyInput("U")}>
+            U
+          </div>
+          <div className="key" id="I" onClick={() => handleKeyInput("I")}>
+            I
+          </div>
+          <div className="key" id="O" onClick={() => handleKeyInput("O")}>
+            O
+          </div>
+          <div className="key" id="P" onClick={() => handleKeyInput("P")}>
+            P
+          </div>
+        </div>
+        <div className="keyboard-row">
+          <div className="key" id="A" onClick={() => handleKeyInput("A")}>
+            A
+          </div>
+          <div className="key" id="S" onClick={() => handleKeyInput("S")}>
+            S
+          </div>
+          <div className="key" id="D" onClick={() => handleKeyInput("D")}>
+            D
+          </div>
+          <div className="key" id="F" onClick={() => handleKeyInput("F")}>
+            F
+          </div>
+          <div className="key" id="G" onClick={() => handleKeyInput("G")}>
+            G
+          </div>
+          <div className="key" id="H" onClick={() => handleKeyInput("H")}>
+            H
+          </div>
+          <div className="key" id="J" onClick={() => handleKeyInput("J")}>
+            J
+          </div>
+          <div className="key" id="K" onClick={() => handleKeyInput("K")}>
+            K
+          </div>
+          <div className="key" id="L" onClick={() => handleKeyInput("L")}>
+            L
+          </div>
+        </div>
+        <div className="keyboard-row">
+          <div className="key" id="Z" onClick={() => handleKeyInput("Z")}>
+            Z
+          </div>
+          <div className="key" id="X" onClick={() => handleKeyInput("X")}>
+            X
+          </div>
+          <div className="key" id="C" onClick={() => handleKeyInput("C")}>
+            C
+          </div>
+          <div className="key" id="V" onClick={() => handleKeyInput("V")}>
+            V
+          </div>
+          <div className="key" id="B" onClick={() => handleKeyInput("B")}>
+            B
+          </div>
+          <div className="key" id="N" onClick={() => handleKeyInput("N")}>
+            N
+          </div>
+          <div className="key" id="M" onClick={() => handleKeyInput("M")}>
+            M
+          </div>
+        </div>
+      </div>
     </>
   );
 }

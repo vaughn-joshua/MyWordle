@@ -46,6 +46,9 @@
   background-color: #ffffff00;
   width: 3rem;
   height: 3rem;
+  text-align: center;
+  font-size: x-large;
+  font-weight: bold;
 }
 
 .row {
@@ -56,11 +59,42 @@
 }
 
 .green {
-  background-color: green;
+  background-color: green !important;
+  border: green 2px solid;
 }
 .yellow {
-  background-color: yellow;
+  background-color: rgb(184, 164, 14) !important;
+  border: rgb(184, 164, 14) 2px solid;
 }
 .gray {
-  background-color: gray;
+  background-color: gray !important;
+  border: gray 2px solid;
+}
+.keyboard-row {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  gap: 0.3rem;
+}
+.key {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+.key:hover {
+  border-color: #646cff;
+}
+.key:hover {
+  border-color: #646cff;
+}
+.key:focus,
+.key:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
 }
