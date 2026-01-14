@@ -8,6 +8,7 @@ login?
 - max 3 words to guess per day (if not logged in, max 1 word to guess per day)
 
 play
+- can have events (brainrot words, animal words, sports)
 
 how to play
 
