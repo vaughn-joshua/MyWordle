@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function Game() {
   type WordLetters = Record<string, { count: number }>;
@@ -11,12 +11,15 @@ function Game() {
   const wordObjRef = useRef<WordLetters>({});
   const hasLoadedRef = useRef(false);
 
+  const [modal, setModal] = useState<boolean>(false);
+
   useEffect(() => {
     const init = async () => {
       await getWordOfTheDay(); // wait for the word to load
       if (!hasLoadedRef.current) {
         BuildWordObject();
-        reloadGuess(); // now answer is ready
+        reloadGuess();
+
         hasLoadedRef.current = true;
       }
     };
@@ -25,14 +28,17 @@ function Game() {
 
     window.addEventListener("keydown", handleKeyDown);
 
-    localStorage.clear(); //reset for testing
+    localStorage.clear(); //reset for testing, DONT COMMENT OUT FOR DEVELOPMENT
   }, []);
 
   const reloadGuess = () => {
     const previousGuesses = JSON.parse(
       localStorage.getItem("guesses") || "[]"
     ) as string[];
-    console.log(previousGuesses);
+
+    if (previousGuesses.length === 0 || previousGuesses[0] === "") {
+      setModal(true);
+    }
 
     for (let i = 0; i < previousGuesses.length; i++) {
       //populate frontend, rowRef
@@ -78,8 +84,6 @@ function Game() {
         wordObjRef.current[char] = { count: 1 };
       }
     }
-
-    console.log(wordObjRef.current);
   };
 
   const getWordOfTheDay = async (): Promise<void> => {
@@ -125,7 +129,6 @@ function Game() {
       currentColumnRef.current = currentColumnRef.current - 1;
     } else if (key === "Enter") {
       const isItWord = await isWord(currentGuessRef.current);
-      console.log("isItWord", isItWord);
 
       if (!isItWord && currentGuessRef.current.length === 5) {
         alert(`${currentGuessRef.current.toUpperCase()} is not a word`);
@@ -145,7 +148,6 @@ function Game() {
         alert("Need 5 letters");
       } else {
         // proceed to check the guess
-        console.log("Checking guess:", currentGuessRef.current);
         checkGuess(currentGuessRef.current);
 
         //store on localstorage
@@ -177,14 +179,8 @@ function Game() {
 
         row?.children[i]?.classList.add("green");
 
-        console.log(`${answer[i]} subtracting 1`);
-
         answerLetters[answer[i]].count += -1;
         processed[i] = true; // mark as green
-
-        console.log(answerLetters);
-
-        console.log(processed);
       }
     }
 
@@ -213,6 +209,10 @@ function Game() {
       currentRowRef.current = 6; // End the game
       alert("Congratulations! You've guessed the word!");
     }
+  };
+
+  const handleClose = () => {
+    setModal(false);
   };
 
   /*
@@ -346,7 +346,53 @@ function Game() {
           </div>
         </div>
       </div>
+
+      {/* How to play */}
+      {modal && <HowToPlay onClose={handleClose} />}
     </>
+  );
+}
+
+function HowToPlay({ onClose }: { onClose: () => void }) {
+  const handleClose = () => {
+    onClose();
+  };
+  return (
+    <div className="modal">
+      <h1>How to Play</h1>
+      <div>
+        <ol>
+          <li className="number">Enter a 5-letter word in the first row.</li>
+          <ul>
+            <li>Example: APPLE</li>
+          </ul>
+          <li className="number">
+            Check the colors of the letters after you submit
+          </li>
+          <ul>
+            <li>Green → The letter is correct and in the right position.</li>
+            <li>Yellow → The letter is correct but in the wrong position.</li>
+            <li>Gray → The letter is not in the word at all.</li>
+          </ul>
+          <li className="number">Use the feedback to make your next guess.</li>
+          <ul>
+            <li>Try to place green letters in the same spot.</li>
+            <li>Move yellow letters to a different spot.</li>
+            <li>Avoid gray letters in future guesses.</li>
+          </ul>
+          <li className="number">
+            Repeat steps 1–3 until you either guess the word correctly or use
+            all 6 attempts.
+          </li>
+          <li className="number">Win or lose:</li>
+          <ul>
+            <li>If you guess the word in 6 tries → You win! 🎉</li>
+            <li>If you don’t → The hidden word is revealed at the end.</li>
+          </ul>
+        </ol>
+      </div>
+      <button onClick={handleClose}>Close</button>
+    </div>
   );
 }
 

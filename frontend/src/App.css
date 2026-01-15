@@ -98,3 +98,69 @@
 .key:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+
+/* HowToPlay.css */
+
+/* Overlay background */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 500px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px 30px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  font-family: Arial, sans-serif;
+  text-align: left;
+}
+
+/* Title */
+.modal h1 {
+  text-align: center;
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Ordered and unordered lists */
+.modal ol {
+  padding-left: 20px;
+  margin-bottom: 15px;
+}
+
+.modal ul {
+  padding-left: 20px;
+  margin-bottom: 10px;
+}
+
+.modal li {
+  margin-bottom: 8px;
+  line-height: 1.4;
+  color: #555;
+}
+
+/* Close button */
+.modal button {
+  display: block;
+  margin: 20px auto 0 auto;
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.modal button:hover {
+  background-color: #45a049;
+}
+
+.number {
+  font-weight: bold;
+}
