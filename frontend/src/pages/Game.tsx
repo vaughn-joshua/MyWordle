@@ -65,7 +65,9 @@ function Game() {
   const isWord = async (word: string): Promise<boolean> => {
     try {
       console.log("Checking for word...");
-      const res = await fetch(`http://localhost:5000/api/is-word/${word}`);
+      const res = await fetch(
+        `https://mywordle-production-7c05.up.railway.app/api/is-word/${word}`,
+      );
       const data = await res.json();
       return data.valid;
     } catch (error) {
@@ -86,10 +88,12 @@ function Game() {
     }
   };
 
-  const getWordOfTheDay = async (): Promise<void> => {w
+  const getWordOfTheDay = async (): Promise<void> => {
     try {
       console.log("Fetching word of the day...");
-      const res = await fetch("http://localhost:5000/api/word-of-the-day");
+      const res = await fetch(
+        "https://mywordle-production-7c05.up.railway.app/api/word-of-the-day",
+      );
       const word = await res.text();
       currentWordRef.current = word;
       console.log(currentWordRef.current);
@@ -214,25 +218,6 @@ function Game() {
   const handleClose = () => {
     setModal(false);
   };
-
-  /*
-    every enter the guess is stored in the guess array
-
-    DAPAT YUNG CURRENT ROW LANG PEDE MAG INPUT
-
-    and when ENTER is pressed
-        check if the guess is correct
-        the current row is incremented by 1
-
-    OKAY CHANGE APPROACH
-
-    listen on keyboard
-
-    change cell names, so when user enters easy to add value. (input only gonna be readonly)
-
-    when enter clicked, check if 6 letters. then check if correct.
-
-  */
 
   return (
     <>
