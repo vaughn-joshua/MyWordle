@@ -33,7 +33,7 @@ function Game() {
 
   const reloadGuess = () => {
     const previousGuesses = JSON.parse(
-      localStorage.getItem("guesses") || "[]"
+      localStorage.getItem("guesses") || "[]",
     ) as string[];
 
     if (previousGuesses.length === 0 || previousGuesses[0] === "") {
@@ -65,7 +65,7 @@ function Game() {
   const isWord = async (word: string): Promise<boolean> => {
     try {
       console.log("Checking for word...");
-      const res = await fetch(`http://localhost:3000/api/is-word/${word}`);
+      const res = await fetch(`http://localhost:5000/api/is-word/${word}`);
       const data = await res.json();
       return data.valid;
     } catch (error) {
@@ -86,10 +86,10 @@ function Game() {
     }
   };
 
-  const getWordOfTheDay = async (): Promise<void> => {
+  const getWordOfTheDay = async (): Promise<void> => {w
     try {
       console.log("Fetching word of the day...");
-      const res = await fetch("http://localhost:3000/api/word-of-the-day");
+      const res = await fetch("http://localhost:5000/api/word-of-the-day");
       const word = await res.text();
       currentWordRef.current = word;
       console.log(currentWordRef.current);
@@ -137,7 +137,7 @@ function Game() {
         for (let i = 0; i < 5; i++) {
           rowRef.current[currentRowRef.current]?.children[i]?.setAttribute(
             "value",
-            ""
+            "",
           );
         }
         currentGuessRef.current = "";
@@ -152,7 +152,7 @@ function Game() {
 
         //store on localstorage
         const previousGuesses = JSON.parse(
-          localStorage.getItem("guesses") || "[]"
+          localStorage.getItem("guesses") || "[]",
         );
         previousGuesses.push(currentGuessRef.current);
         localStorage.setItem("guesses", JSON.stringify(previousGuesses));
@@ -236,10 +236,8 @@ function Game() {
 
   return (
     <>
-      <h1>Game Page</h1>
-      <div>
-        <p>This is where the game will be played.</p>
-      </div>
+      <h1>Game Start!</h1>
+
       {/* Game grid */}
       {Array.from({ length: 6 }).map((_, rowIndex: number) => (
         // Each row

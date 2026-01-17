@@ -1,12 +1,17 @@
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
-
-const app: Application = express();
-const PORT: number = 3000;
+import dotenv from "dotenv";
 
 let corsOptions = {
-  origin: ["http://localhost:5173"],
+  origin: ["http://localhost:5173", "https://wordle-seven-psi.vercel.app/game"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
 };
+
+dotenv.config();
+
+const app: Application = express();
+const PORT: string | 3000 = process.env.PORT || 3000;
 
 app.use(cors(corsOptions));
 
@@ -33,7 +38,7 @@ app.get(
     console.log("checking word");
     const word = req.params.word;
     const response = await fetch(
-      `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
+      `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`,
     );
     const result: any = await response.json();
 
@@ -42,7 +47,7 @@ app.get(
     console.log(response.ok);
 
     res.json({ valid: response.ok });
-  }
+  },
 );
 
 app.get(
@@ -56,7 +61,7 @@ app.get(
     }
 
     const fetchRes = await fetch(
-      "https://random-word-api.herokuapp.com/word?length=5"
+      "https://random-word-api.herokuapp.com/word?length=5",
     );
 
     const wordArray = (await fetchRes.json()) as string[];
@@ -73,7 +78,7 @@ app.get(
     if no, fetch a new word, cache it, and return it
     
     */
-  }
+  },
 );
 
 app.listen(PORT, () => {

@@ -11,12 +11,10 @@ function Home() {
 
   return (
     <main>
-      <h1>Wordle</h1>
+      <h1>Welcome to MyWordle</h1>
       <p>
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Asperiores
-        aliquam necessitatibus aut, minus dolorum iusto culpa ipsa unde
-        praesentium quia debitis totam dicta exercitationem sequi sint sunt
-        quis. Fugiat, perspiciatis!
+        Guess the hidden word in six tries. <br />
+        Each guess brings you closer—think carefully and start strong.
       </p>
       <button onClick={handlePlayClick}>Play</button>
     </main>

@@ -5,11 +5,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const app = (0, express_1.default)();
-const PORT = 3000;
+const dotenv_1 = __importDefault(require("dotenv"));
 let corsOptions = {
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", "https://wordle-seven-psi.vercel.app/game"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
 };
+dotenv_1.default.config();
+const app = (0, express_1.default)();
+const PORT = process.env.PORT || 3000;
 app.use((0, cors_1.default)(corsOptions));
 app.get("/", (req, res) => {
     console.log("Received a request at /");
